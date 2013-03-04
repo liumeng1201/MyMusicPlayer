@@ -1,4 +1,4 @@
 MyMusicPlayer
 =============
 
-An Android Music Player
+Use this repository to manage my Music Player projects.
