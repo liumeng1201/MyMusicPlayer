@@ -122,8 +122,55 @@ public class MusicService extends Service implements
 		_position = bundle.getInt("_position");
 		_path = bundle.getString("_path");
 
+		if ((_path != null) && (mMediaPlayer != null)) {
+			try {
+				// 设置媒体路径
+				mMediaPlayer.setDataSource(_path);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		setup();
 		init();
+
+		int op = bundle.getInt("_op", -1);
+		if (op != -1) {
+			switch (op) {
+			case MUSIC_PLAY:
+				// 播放
+				if (mMediaPlayer != null) {
+					play();
+				}
+				break;
+			case MUSIC_PAUSE:
+				// 暂停
+				if (mMediaPlayer.isPlaying()) {
+					pause();
+				}
+				break;
+			case MUSIC_STOP:
+				// 停止
+				stop();
+				break;
+			case MUSIC_PROGRESS_CHANGE:
+				// 进度条改变
+				currentTime = bundle.getInt("_progress");
+				mMediaPlayer.seekTo(currentTime);
+				break;
+			}
+		}
+		showNotification();
 
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -137,6 +184,8 @@ public class MusicService extends Service implements
 	@Override
 	public void onCompletion(MediaPlayer mediaplayer) {
 		// TODO Auto-generated method stub
+		// nextOne();此处代码要修改
+		stop();
 	}
 
 	/**
@@ -166,10 +215,9 @@ public class MusicService extends Service implements
 		// 向MusicPlayActivity发送广播,告知当前音频文件总时间
 		sendBroadcast(intent);
 	}
-	
+
 	/**
-	 * 初始化,进行currentTime设置及更新
-	 * 进行mHandler初始化
+	 * 初始化,进行currentTime设置及更新 进行mHandler初始化
 	 */
 	private void init() {
 		final Intent intent = new Intent();
