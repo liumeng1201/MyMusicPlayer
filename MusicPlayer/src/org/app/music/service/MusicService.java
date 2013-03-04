@@ -9,6 +9,7 @@ import org.app.musicplayer.PlayMusicActivity;
 import org.app.musicplayer.R;
 
 import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -29,8 +30,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 /**
- * 所有播放操作都交给服务,要服务就是为了实现后台播放,如果不用服务，那么一个界面关闭后，音乐也随着消失了。 但是用了服务这种情况不存在了。我们要做的永久
- * 在后台播放。直到用户把服务秒杀了。
+ * 所有播放操作都交给服务,要服务就是为了实现后台播放,如果不用服务，那么一个界面关闭后，音乐也随着消失了。
+ * 但是用了服务这种情况不存在了。我们要做的永久在后台播放。直到用户把服务秒杀了。
  * 
  * @author 涙星
  */
@@ -109,9 +110,15 @@ public class MusicService extends Service implements
 		PendingIntent contentIntent = PendingIntent.getActivity(
 				getApplicationContext(), 0, intent2,
 				PendingIntent.FLAG_UPDATE_CURRENT);
-		notification.setLatestEventInfo(getApplicationContext(), _title,
-				_artist, contentIntent);
-		nm.notify(0, notification);
+//		notification.setLatestEventInfo(getApplicationContext(), _title,
+//				_artist, contentIntent);
+
+		Builder builder = new Notification.Builder(getApplicationContext());
+		builder.setContentIntent(contentIntent).setSmallIcon(R.drawable.music)
+				.setWhen(System.currentTimeMillis()).setContentTitle(_title).setContentText(_artist);
+
+//		nm.notify(0, notification);
+		nm.notify(0, builder.getNotification());
 
 	}
 

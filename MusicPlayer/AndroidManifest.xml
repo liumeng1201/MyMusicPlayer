@@ -6,7 +6,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="17" />
     <!-- 完全访问网络 -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,30 +38,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- 所有的Activity强制屏幕竖，且不带标题 -->
         <activity
             android:name="MusicListActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name="FavroiteActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name="MusicOnlineActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name="org.app.musicplayer.SkinSettingActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name="PlayMusicActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
 
@@ -73,17 +67,14 @@
 
         <activity
             android:name="AboutActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Animation.Dialog" >
         </activity>
         <activity
             android:name="ScanMusicActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name="ScanDirectoryActivity"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
     </application>
