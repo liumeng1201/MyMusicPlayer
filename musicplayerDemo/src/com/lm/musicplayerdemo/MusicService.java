@@ -7,6 +7,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 
@@ -50,6 +53,7 @@ public class MusicService extends Service implements
 	private void play() {
 		if (mMediaPlayer != null) {
 			mMediaPlayer.start();
+			showNotification();
 		}
 	}
 
@@ -69,6 +73,7 @@ public class MusicService extends Service implements
 		if (mMediaPlayer != null) {
 			mMediaPlayer.stop();
 		}
+		mNotificationManager.cancelAll();
 	}
 
 	/**
@@ -117,6 +122,9 @@ public class MusicService extends Service implements
 		Builder builder = new Notification.Builder(MusicService.this);
 		// 设置通知栏要显示的内容
 		builder.setSmallIcon(R.drawable.beats_logo_s);
+		Bitmap icon = BitmapFactory.decodeResource(getResources(),
+				R.drawable.beats_logo_l);
+		builder.setLargeIcon(icon);
 		builder.setContentTitle(mTitle);
 		builder.setContentText(mArtist);
 		builder.setAutoCancel(false);
@@ -124,7 +132,11 @@ public class MusicService extends Service implements
 
 		mCurrentTime = getCurrentTime();
 		Intent intent = new Intent(MusicService.this, PlayActivity.class);
-//		设置要传递的数据
+		// 设置要传递的数据
+		intent.putExtra(Util.MUSIC_TITLE, mTitle);
+		intent.putExtra(Util.MUSIC_ARTIST, mArtist);
+		intent.putExtra(Util.MUSIC_CURRENTTIME, mCurrentTime);
+		intent.putExtra(Util.MUSIC_DURATION, mDuration);
 		PendingIntent contentIntent = PendingIntent
 				.getActivity(MusicService.this, 0, intent,
 						PendingIntent.FLAG_UPDATE_CURRENT);

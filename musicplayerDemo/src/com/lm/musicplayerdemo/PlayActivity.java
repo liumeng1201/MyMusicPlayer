@@ -1,5 +1,7 @@
 package com.lm.musicplayerdemo;
 
-public class PlayActivity {
+import android.app.Activity;
+
+public class PlayActivity extends Activity {
 
 }
