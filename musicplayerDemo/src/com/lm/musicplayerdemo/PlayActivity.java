@@ -14,6 +14,7 @@ public class PlayActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.play_activity);
 
 		Intent intent = getIntent();
 		mTitle = intent.getStringExtra(Util.MUSIC_TITLE);
