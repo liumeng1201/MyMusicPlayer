@@ -18,3 +18,5 @@ local.properties
 # eclipse project file
 *.classpath
 *.project
+/MusicPlayer/.classpath
+/musicplayerDemo/.classpath
