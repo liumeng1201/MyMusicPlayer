@@ -17,5 +17,7 @@ public class Util {
 	public static final int MUSIC_PREVIOUS = 5;
 	public static final int MUSIC_PROGRESS_CHANGE = 6;
 	
+	public static final boolean IS_MUSIC_PLAYINT = false;
+	
 	public static final String MUSIC_SERVICE = "com.lm.musicplayer.MUSIC_SERVICE";
 }
