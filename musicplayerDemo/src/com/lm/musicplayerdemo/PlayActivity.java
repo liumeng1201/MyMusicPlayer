@@ -5,9 +5,24 @@ import android.content.Intent;
 import android.os.Bundle;
 
 public class PlayActivity extends Activity {
+	/**
+	 * 歌曲名
+	 */
 	private String mTitle;
+
+	/**
+	 * 歌手名
+	 */
 	private String mArtist;
+
+	/**
+	 * 当前播放时间
+	 */
 	private int mCurrentTime;
+
+	/**
+	 * 总时间
+	 */
 	private int mDuration;
 
 	@Override
