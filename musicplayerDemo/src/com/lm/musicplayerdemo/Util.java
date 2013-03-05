@@ -8,4 +8,6 @@ public class Util {
 	public static final String MUSIC_TITLE = "music.title";
 	public static final String MUSIC_ALBUM = "music.album";
 	public static final String MUSIC_PATH = "music.path";
+	
+	public static final boolean IS_MUSIC_PLAYING = false;
 }

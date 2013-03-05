@@ -25,6 +25,11 @@ public class PlayActivity extends Activity {
 	 */
 	private int mDuration;
 
+	/**
+	 * 音乐文件的路径
+	 */
+	private String mPath;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -36,6 +41,31 @@ public class PlayActivity extends Activity {
 		mArtist = intent.getStringExtra(Util.MUSIC_ARTIST);
 		mCurrentTime = intent.getIntExtra(Util.MUSIC_CURRENTTIME, 0);
 		mDuration = intent.getIntExtra(Util.MUSIC_DURATION, 0);
+		mPath = intent.getStringExtra(Util.MUSIC_PATH);
+	}
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		if (!Util.IS_MUSIC_PLAYING) {
+			
+		}
 	}
 
+	private void play() {
+
+	}
+
+	private void pause() {
+
+	}
+
+	private void stop() {
+
+	}
+
+	private boolean isPlaying() {
+		return true;
+	}
 }

@@ -22,9 +22,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <activity
-            android:name="com.lm.musicplayerdemo.PlayActivity" />
+        <activity android:name="com.lm.musicplayerdemo.PlayActivity" />
+
+        <service android:name="com.lm.musicplayerdemo.MusicService" >
+            <intent-filter>
+                <action android:name="com.lm.musicplayer.MUSIC_SERVICE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
