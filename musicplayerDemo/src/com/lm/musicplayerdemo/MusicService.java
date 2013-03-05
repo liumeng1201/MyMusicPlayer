@@ -35,6 +35,60 @@ public class MusicService extends Service implements
 	private static Notification mNotification;
 	private static NotificationManager mNotificationManager;
 
+	@Override
+	public void onCreate() {
+		// TODO Auto-generated method stub
+		super.onCreate();
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// TODO Auto-generated method stub
+		// 获取由PlayActivity传递过来的对MediaPlayer的操作数
+		int operate = intent.getIntExtra(Util.OPERATE_NUMBER, -1);
+		switch (operate) {
+		case Util.MUSIC_PLAY:
+			// 播放
+			if (!isplaying()) {
+				play();
+			}
+			break;
+		case Util.MUSIC_PAUSE:
+			// 暂停
+			if (isplaying()) {
+				pause();
+			}
+			break;
+		case Util.MUSIC_STOP:
+			// 停止
+			stop();
+			break;
+		case Util.MUSIC_NEXT:
+			// 下一首
+			next();
+			break;
+		case Util.MUSIC_PREVIOUS:
+			// 上一首
+			previous();
+			break;
+		case Util.MUSIC_PROGRESS_CHANGE:
+			// 进度条进度改变
+			int progress = intent.getIntExtra(Util.MUSIC_PROGRESS, 0);
+			progresschange(progress);
+			break;
+		default:
+			break;
+		}
+
+		return super.onStartCommand(intent, flags, startId);
+	}
+
 	/**
 	 * 对MusicService进行初始化
 	 */
@@ -90,6 +144,18 @@ public class MusicService extends Service implements
 	}
 
 	/**
+	 * 进度条改变
+	 * 
+	 * @param progress
+	 *            改变之后的进度条的值
+	 */
+	private void progresschange(int progress) {
+		if (mMediaPlayer != null) {
+			mMediaPlayer.seekTo(progress);
+		}
+	}
+
+	/**
 	 * 播放器在进行销毁时调用
 	 */
 	private void destory() {
@@ -97,6 +163,19 @@ public class MusicService extends Service implements
 			mMediaPlayer.release();
 			mMediaPlayer = null;
 		}
+	}
+
+	/**
+	 * @return 播放器是否正在播放
+	 */
+	private boolean isplaying() {
+		boolean isplaying = false;
+		if (mMediaPlayer != null) {
+			isplaying = mMediaPlayer.isPlaying();
+		} else {
+			isplaying = false;
+		}
+		return isplaying;
 	}
 
 	/**

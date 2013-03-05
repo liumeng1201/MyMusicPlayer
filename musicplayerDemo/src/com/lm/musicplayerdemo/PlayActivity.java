@@ -48,23 +48,35 @@ public class PlayActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		if (!Util.IS_MUSIC_PLAYING) {
+		if (!isPlaying()) {
 			
 		}
 	}
 
+	/**
+	 * 播放音乐,向MusicService发送播放音乐的请求
+	 */
 	private void play() {
-
+		
 	}
 
+	/**
+	 * 暂停播放,向MusicService发送暂停播放音乐的请求
+	 */
 	private void pause() {
 
 	}
 
+	/**
+	 * 停止播放,向MusicService发送停止播放音乐的请求
+	 */
 	private void stop() {
 
 	}
 
+	/**
+	 * @return 是否正在播放音乐
+	 */
 	private boolean isPlaying() {
 		return true;
 	}
