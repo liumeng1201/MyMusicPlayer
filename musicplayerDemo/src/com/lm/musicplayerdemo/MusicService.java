@@ -107,6 +107,9 @@ public class MusicService extends Service implements
 		}
 	}
 
+	/**
+	 * 向PlayActivity发送数据更新广播,通知其进行数据更新
+	 */
 	private void sendbroadcast() {
 		if (mHandler == null) {
 			mHandler = new Handler() {
@@ -116,7 +119,8 @@ public class MusicService extends Service implements
 					super.handleMessage(msg);
 					switch (msg.what) {
 					case Util.msg_current:
-						Intent intent = new Intent(Util.MUSIC_ACTION_CURRENTTIME);
+						Intent intent = new Intent(
+								Util.MUSIC_ACTION_CURRENTTIME);
 						intent.putExtra(Util.KEY_CURRENTTIME, getCurrentTime());
 						sendBroadcast(intent);
 						mHandler.sendEmptyMessageDelayed(Util.msg_current, 500);
@@ -126,6 +130,12 @@ public class MusicService extends Service implements
 						intent2.putExtra(Util.KEY_DURATION, getDuration());
 						sendBroadcast(intent2);
 						mHandler.sendEmptyMessageDelayed(Util.msg_durtion, 500);
+						break;
+					case Util.msg_title:
+						Intent intent3 = new Intent(Util.MUSIC_ACTION_TITLE);
+						intent3.putExtra(Util.KEY_TITLE, getTitle());
+						sendBroadcast(intent3);
+						mHandler.sendEmptyMessageDelayed(Util.msg_title, 500);
 						break;
 					}
 				}
@@ -231,6 +241,23 @@ public class MusicService extends Service implements
 			duration = mMediaPlayer.getDuration();
 		}
 		return duration;
+	}
+
+	/**
+	 * @return 歌手名
+	 */
+	private String getTitle() {
+		return mTitle;
+	}
+
+	/**
+	 * 设置歌手名
+	 * 
+	 * @param title
+	 *            歌手名
+	 */
+	private void setTitle(String title) {
+		this.mTitle = title;
 	}
 
 	/**
