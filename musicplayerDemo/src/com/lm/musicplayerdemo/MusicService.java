@@ -10,12 +10,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 
 public class MusicService extends Service implements
 		MediaPlayer.OnCompletionListener {
 	// MediaPlayer对象
 	private MediaPlayer mMediaPlayer;
+
+	// 用来向PlayActivity发送广播
+	private Handler mHandler;
 
 	// 音频文件总时间
 	private int mDuration;
@@ -39,6 +44,8 @@ public class MusicService extends Service implements
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+
+		init();
 	}
 
 	@Override
@@ -53,33 +60,33 @@ public class MusicService extends Service implements
 		// 获取由PlayActivity传递过来的对MediaPlayer的操作数
 		int operate = intent.getIntExtra(Util.OPERATE_NUMBER, -1);
 		switch (operate) {
-		case Util.MUSIC_PLAY:
+		case Util.MUSIC_OP_PLAY:
 			// 播放
 			if (!isplaying()) {
 				play();
 			}
 			break;
-		case Util.MUSIC_PAUSE:
+		case Util.MUSIC_OP_PAUSE:
 			// 暂停
 			if (isplaying()) {
 				pause();
 			}
 			break;
-		case Util.MUSIC_STOP:
+		case Util.MUSIC_OP_STOP:
 			// 停止
 			stop();
 			break;
-		case Util.MUSIC_NEXT:
+		case Util.MUSIC_OP_NEXT:
 			// 下一首
 			next();
 			break;
-		case Util.MUSIC_PREVIOUS:
+		case Util.MUSIC_OP_PREVIOUS:
 			// 上一首
 			previous();
 			break;
-		case Util.MUSIC_PROGRESS_CHANGE:
+		case Util.MUSIC_OP_PROGRESS_CHANGE:
 			// 进度条进度改变
-			int progress = intent.getIntExtra(Util.MUSIC_PROGRESS, 0);
+			int progress = intent.getIntExtra(Util.MUSIC_ACTION_PROGRESS, 0);
 			progresschange(progress);
 			break;
 		default:
@@ -97,6 +104,32 @@ public class MusicService extends Service implements
 			mMediaPlayer = new MediaPlayer();
 		} else {
 			mMediaPlayer.reset();
+		}
+	}
+
+	private void sendbroadcast() {
+		if (mHandler == null) {
+			mHandler = new Handler() {
+				@Override
+				public void handleMessage(Message msg) {
+					// TODO Auto-generated method stub
+					super.handleMessage(msg);
+					switch (msg.what) {
+					case Util.msg_current:
+						Intent intent = new Intent(Util.MUSIC_ACTION_CURRENTTIME);
+						intent.putExtra(Util.KEY_CURRENTTIME, getCurrentTime());
+						sendBroadcast(intent);
+						mHandler.sendEmptyMessageDelayed(Util.msg_current, 500);
+						break;
+					case Util.msg_durtion:
+						Intent intent2 = new Intent(Util.MUSIC_ACTION_DURATION);
+						intent2.putExtra(Util.KEY_DURATION, getDuration());
+						sendBroadcast(intent2);
+						mHandler.sendEmptyMessageDelayed(Util.msg_durtion, 500);
+						break;
+					}
+				}
+			};
 		}
 	}
 
@@ -190,6 +223,17 @@ public class MusicService extends Service implements
 	}
 
 	/**
+	 * @return 当前歌曲总时间
+	 */
+	private int getDuration() {
+		int duration = 0;
+		if (mMediaPlayer != null) {
+			duration = mMediaPlayer.getDuration();
+		}
+		return duration;
+	}
+
+	/**
 	 * 显示通知栏
 	 */
 	private void showNotification() {
@@ -211,10 +255,10 @@ public class MusicService extends Service implements
 		mCurrentTime = getCurrentTime();
 		Intent intent = new Intent(MusicService.this, PlayActivity.class);
 		// 设置要传递的数据
-		intent.putExtra(Util.MUSIC_TITLE, mTitle);
-		intent.putExtra(Util.MUSIC_ARTIST, mArtist);
-		intent.putExtra(Util.MUSIC_CURRENTTIME, mCurrentTime);
-		intent.putExtra(Util.MUSIC_DURATION, mDuration);
+		intent.putExtra(Util.MUSIC_ACTION_TITLE, mTitle);
+		intent.putExtra(Util.MUSIC_ACTION_ARTIST, mArtist);
+		intent.putExtra(Util.MUSIC_ACTION_CURRENTTIME, mCurrentTime);
+		intent.putExtra(Util.MUSIC_ACTION_DURATION, mDuration);
 		PendingIntent contentIntent = PendingIntent
 				.getActivity(MusicService.this, 0, intent,
 						PendingIntent.FLAG_UPDATE_CURRENT);

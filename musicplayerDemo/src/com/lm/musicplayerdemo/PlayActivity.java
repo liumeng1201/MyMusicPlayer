@@ -1,7 +1,10 @@
 package com.lm.musicplayerdemo;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 public class PlayActivity extends Activity {
@@ -14,6 +17,11 @@ public class PlayActivity extends Activity {
 	 * 歌手名
 	 */
 	private String mArtist;
+
+	/**
+	 * 专辑名
+	 */
+	private String mAlbum;
 
 	/**
 	 * 当前播放时间
@@ -39,11 +47,11 @@ public class PlayActivity extends Activity {
 		setContentView(R.layout.play_activity);
 
 		Intent intent = getIntent();
-		mTitle = intent.getStringExtra(Util.MUSIC_TITLE);
-		mArtist = intent.getStringExtra(Util.MUSIC_ARTIST);
-		mCurrentTime = intent.getIntExtra(Util.MUSIC_CURRENTTIME, 0);
-		mDuration = intent.getIntExtra(Util.MUSIC_DURATION, 0);
-		mPath = intent.getStringExtra(Util.MUSIC_PATH);
+		mTitle = intent.getStringExtra(Util.MUSIC_ACTION_TITLE);
+		mArtist = intent.getStringExtra(Util.MUSIC_ACTION_ARTIST);
+		mCurrentTime = intent.getIntExtra(Util.MUSIC_ACTION_CURRENTTIME, 0);
+		mDuration = intent.getIntExtra(Util.MUSIC_ACTION_DURATION, 0);
+		mPath = intent.getStringExtra(Util.MUSIC_ACTION_PATH);
 	}
 
 	@Override
@@ -56,13 +64,28 @@ public class PlayActivity extends Activity {
 	}
 
 	/**
+	 * 初始化,注册要接收的广播
+	 */
+	private void init() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Util.MUSIC_ACTION_CURRENTTIME);
+		filter.addAction(Util.MUSIC_ACTION_DURATION);
+		filter.addAction(Util.MUSIC_ACTION_TITLE);
+		filter.addAction(Util.MUSIC_ACTION_ARTIST);
+		filter.addAction(Util.MUSIC_ACTION_ALBUM);
+
+		// 注册广播接收者
+		registerReceiver(musicserviceReceiver, filter);
+	}
+
+	/**
 	 * 播放音乐,向MusicService发送播放音乐的请求
 	 */
 	private void play() {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		// 向MusicService传递操作数
-		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_PLAY);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_PLAY);
 		startService(intent);
 	}
 
@@ -73,7 +96,7 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		// 向MusicService传递操作数
-		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_PAUSE);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_PAUSE);
 		startService(intent);
 	}
 
@@ -84,7 +107,7 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		// 向MusicService传递操作数
-		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_STOP);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_STOP);
 		startService(intent);
 	}
 
@@ -95,7 +118,7 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		// 向MusicService传递操作数
-		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_NEXT);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_NEXT);
 		startService(intent);
 	}
 
@@ -106,7 +129,7 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		// 向MusicService传递操作数
-		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_PREVIOUS);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_PREVIOUS);
 		startService(intent);
 	}
 
@@ -120,8 +143,8 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		// 向MusicService传递操作数
-		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_PROGRESS_CHANGE);
-		intent.putExtra(Util.MUSIC_PROGRESS, progress);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_PROGRESS_CHANGE);
+		intent.putExtra(Util.MUSIC_ACTION_PROGRESS, progress);
 		startService(intent);
 	}
 
@@ -141,4 +164,109 @@ public class PlayActivity extends Activity {
 	private void setPlayingState(boolean state) {
 		this.isplaying = state;
 	}
+
+	/**
+	 * 设置当前的播放时间
+	 * 
+	 * @param current
+	 *            当前的播放时间
+	 */
+	private void setCurrentTime(int current) {
+		this.mCurrentTime = current;
+		setSeekbarProgress(mCurrentTime);
+	}
+
+	/**
+	 * 设置歌曲总时间
+	 * 
+	 * @param duration
+	 *            歌曲总时间
+	 */
+	private void setDuration(int duration) {
+		this.mDuration = duration;
+		setSeekbarMax(mDuration);
+	}
+
+	/**
+	 * 设置歌曲名
+	 * 
+	 * @param title
+	 *            歌曲名
+	 */
+	private void setTitle(String title) {
+		this.mTitle = title;
+	}
+
+	/**
+	 * 设置歌手名
+	 * 
+	 * @param artist
+	 *            歌手名
+	 */
+	private void setArtist(String artist) {
+		this.mArtist = artist;
+	}
+
+	/**
+	 * 设置专辑名
+	 * 
+	 * @param album
+	 *            专辑名
+	 */
+	private void setAlbum(String album) {
+		this.mAlbum = album;
+	}
+
+	/**
+	 * 设置进度条的当前位置
+	 * 
+	 * @param progress
+	 *            进度条进度
+	 */
+	private void setSeekbarProgress(int progress) {
+
+	}
+
+	/**
+	 * 设置进度条的最大值
+	 * 
+	 * @param max
+	 *            进度条最大值
+	 */
+	private void setSeekbarMax(int max) {
+
+	}
+
+	/**
+	 * 用于接收从MusicService发送过来的广播信息
+	 */
+	protected BroadcastReceiver musicserviceReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			String action = intent.getAction();
+			if (action.equals(Util.MUSIC_ACTION_CURRENTTIME)) {
+				// 当前播放时间
+				int current = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
+				setCurrentTime(current);
+			} else if (action.equals(Util.MUSIC_ACTION_DURATION)) {
+				// 歌曲总时间
+				int duration = intent.getIntExtra(Util.KEY_DURATION, 0);
+				setDuration(duration);
+			} else if (action.equals(Util.MUSIC_ACTION_TITLE)) {
+				// 歌曲名
+				String title = intent.getStringExtra(Util.KEY_TITLE);
+				setTitle(title);
+			} else if (action.equals(Util.MUSIC_ACTION_ARTIST)) {
+				// 歌手名
+				String artist = intent.getStringExtra(Util.KEY_ARTIST);
+				setArtist(artist);
+			} else if (action.equals(Util.MUSIC_ACTION_ALBUM)) {
+				// 专辑名
+				String album = intent.getStringExtra(Util.KEY_ALBUM);
+				setAlbum(album);
+			}
+		}
+	};
 }

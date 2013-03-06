@@ -1,23 +1,42 @@
 package com.lm.musicplayerdemo;
 
 public class Util {
-	public static final String MUSIC_DURATION = "music.duration";
-	public static final String MUSIC_CURRENTTIME = "music.currenttime";
-	public static final String MUSIC_PROGRESS = "music.progress";
-	public static final String MUSIC_ARTIST = "music.artisr";
-	public static final String MUSIC_TITLE = "music.title";
-	public static final String MUSIC_ALBUM = "music.album";
-	public static final String MUSIC_PATH = "music.path";
-	
+	// action
+	public static final String MUSIC_ACTION_DURATION = "music.duration";
+	public static final String MUSIC_ACTION_CURRENTTIME = "music.currenttime";
+	public static final String MUSIC_ACTION_PROGRESS = "music.progress";
+	public static final String MUSIC_ACTION_ARTIST = "music.artisr";
+	public static final String MUSIC_ACTION_TITLE = "music.title";
+	public static final String MUSIC_ACTION_ALBUM = "music.album";
+	public static final String MUSIC_ACTION_PATH = "music.path";
+
+	// intent key
+	public static final String KEY_CURRENTTIME = "currenttime";
+	public static final String KEY_DURATION = "duration";
+	public static final String KEY_TITLE = "title";
+	public static final String KEY_ARTIST = "artist";
+	public static final String KEY_ALBUM = "album";
+	public static final String KEY_PROGRESS = "progress";
+
+	// handler message.what
+	public static final int msg_current = 1;
+	public static final int msg_durtion = 2;
+	public static final int msg_title = 3;
+	public static final int msg_artist = 4;
+	public static final int msg_album = 5;
+	public static final int msg_progress = 6;
+
+	// operate number
 	public static final String OPERATE_NUMBER = "operate_number";
-	public static final int MUSIC_PLAY = 1;
-	public static final int MUSIC_PAUSE = 2;
-	public static final int MUSIC_STOP = 3;
-	public static final int MUSIC_NEXT = 4;
-	public static final int MUSIC_PREVIOUS = 5;
-	public static final int MUSIC_PROGRESS_CHANGE = 6;
-	
+	public static final int MUSIC_OP_PLAY = 1;
+	public static final int MUSIC_OP_PAUSE = 2;
+	public static final int MUSIC_OP_STOP = 3;
+	public static final int MUSIC_OP_NEXT = 4;
+	public static final int MUSIC_OP_PREVIOUS = 5;
+	public static final int MUSIC_OP_PROGRESS_CHANGE = 6;
+
 	public static final boolean IS_MUSIC_PLAYINT = false;
-	
+
+	// service name
 	public static final String MUSIC_SERVICE = "com.lm.musicplayer.MUSIC_SERVICE";
 }
