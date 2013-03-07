@@ -45,22 +45,19 @@ public class PlayActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.play_activity);
-
-		Intent intent = getIntent();
-		mTitle = intent.getStringExtra(Util.MUSIC_ACTION_TITLE);
-		mArtist = intent.getStringExtra(Util.MUSIC_ACTION_ARTIST);
-		mCurrentTime = intent.getIntExtra(Util.MUSIC_ACTION_CURRENTTIME, 0);
-		mDuration = intent.getIntExtra(Util.MUSIC_ACTION_DURATION, 0);
-		mPath = intent.getStringExtra(Util.MUSIC_ACTION_PATH);
 	}
 
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		if (!isPlaying()) {
-
-		}
+		
+		Intent intent = getIntent();
+		mTitle = intent.getStringExtra(Util.KEY_TITLE);
+		mArtist = intent.getStringExtra(Util.KEY_ARTIST);
+		mCurrentTime = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
+		mDuration = intent.getIntExtra(Util.KEY_DURATION, 0);
+		mPath = intent.getStringExtra(Util.KEY_PATH);
 	}
 
 	/**
@@ -76,6 +73,14 @@ public class PlayActivity extends Activity {
 
 		// 注册广播接收者
 		registerReceiver(musicserviceReceiver, filter);
+	}
+
+	private void setMusicSource(String path) {
+		Intent intent = new Intent();
+		intent.setAction(Util.MUSIC_SERVICE);
+		// 向MusicServer传递音乐文件的路径
+		intent.putExtra(Util.KEY_PATH, path);
+		startService(intent);
 	}
 
 	/**

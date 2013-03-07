@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.putExtra(Util.MUSIC_ACTION_PATH, "/sdcard/无与伦比的美丽-苏打绿.mp3");
+				intent.putExtra(Util.KEY_PATH, "/sdcard/无与伦比的美丽-苏打绿.mp3");
 				startActivity(intent);
 			}
 		});

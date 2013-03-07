@@ -17,6 +17,7 @@ public class Util {
 	public static final String KEY_ARTIST = "artist";
 	public static final String KEY_ALBUM = "album";
 	public static final String KEY_PROGRESS = "progress";
+	public static final String KEY_PATH = "path";
 
 	// handler message.what
 	public static final int msg_current = 1;

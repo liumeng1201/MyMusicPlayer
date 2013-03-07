@@ -1,5 +1,7 @@
 package com.lm.musicplayerdemo;
 
+import java.io.IOException;
+
 import android.app.Notification;
 import android.app.Notification.Builder;
 import android.app.NotificationManager;
@@ -52,6 +54,7 @@ public class MusicService extends Service implements
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+		destory();
 	}
 
 	@Override
@@ -93,6 +96,16 @@ public class MusicService extends Service implements
 			break;
 		}
 
+		// 获取由PlayActivity传递过来的音乐文件的路径
+		String musicpath = intent.getStringExtra(Util.KEY_PATH);
+		setMusicPath(musicpath);
+
+		if (mPath != null) {
+			setMediaPlayerDataSource(mPath);
+		}
+
+		play();
+
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -105,12 +118,14 @@ public class MusicService extends Service implements
 		} else {
 			mMediaPlayer.reset();
 		}
+
+		initBroadcastSendHandler();
 	}
 
 	/**
-	 * 向PlayActivity发送数据更新广播,通知其进行数据更新
+	 * 初始化向PlayActivity发送数据更新广播,通知其进行数据更新
 	 */
-	private void sendbroadcast() {
+	private void initBroadcastSendHandler() {
 		if (mHandler == null) {
 			mHandler = new Handler() {
 				@Override
@@ -119,23 +134,24 @@ public class MusicService extends Service implements
 					super.handleMessage(msg);
 					switch (msg.what) {
 					case Util.msg_current:
-						Intent intent = new Intent(
-								Util.MUSIC_ACTION_CURRENTTIME);
-						intent.putExtra(Util.KEY_CURRENTTIME, getCurrentTime());
-						sendBroadcast(intent);
-						mHandler.sendEmptyMessageDelayed(Util.msg_current, 500);
+						// 发送当前时间信息广播
+						sendCurrentBroad();
 						break;
 					case Util.msg_durtion:
-						Intent intent2 = new Intent(Util.MUSIC_ACTION_DURATION);
-						intent2.putExtra(Util.KEY_DURATION, getDuration());
-						sendBroadcast(intent2);
-						mHandler.sendEmptyMessageDelayed(Util.msg_durtion, 500);
+						// 发送总时间信息广播
+						sendDurationBroad();
 						break;
 					case Util.msg_title:
-						Intent intent3 = new Intent(Util.MUSIC_ACTION_TITLE);
-						intent3.putExtra(Util.KEY_TITLE, getTitle());
-						sendBroadcast(intent3);
-						mHandler.sendEmptyMessageDelayed(Util.msg_title, 500);
+						// 发送歌曲名信息广播
+						sendTitleBroad();
+						break;
+					case Util.msg_artist:
+						// 发送歌手名信息广播
+						sendArtistBroad();
+						break;
+					case Util.msg_album:
+						// 发送专辑信息广播
+						sendAlbumBroad();
 						break;
 					}
 				}
@@ -144,12 +160,102 @@ public class MusicService extends Service implements
 	}
 
 	/**
+	 * 发送当前歌曲播放时间的广播
+	 */
+	private void sendCurrentBroad() {
+		Intent intent = new Intent(Util.MUSIC_ACTION_CURRENTTIME);
+		intent.putExtra(Util.KEY_CURRENTTIME, getCurrentTime());
+		sendBroadcast(intent);
+		mHandler.sendEmptyMessageDelayed(Util.msg_current, 500);
+	}
+
+	/**
+	 * 发送当前歌曲总时间的广播
+	 */
+	private void sendDurationBroad() {
+		Intent intent = new Intent(Util.MUSIC_ACTION_DURATION);
+		intent.putExtra(Util.KEY_DURATION, getDuration());
+		sendBroadcast(intent);
+	}
+
+	/**
+	 * 发送当前歌曲歌曲名信息的广播
+	 */
+	private void sendTitleBroad() {
+		Intent intent = new Intent(Util.MUSIC_ACTION_TITLE);
+		intent.putExtra(Util.KEY_TITLE, getTitle());
+		sendBroadcast(intent);
+	}
+
+	/**
+	 * 发送当前歌曲歌手名信息的广播
+	 */
+	private void sendArtistBroad() {
+		Intent intent = new Intent(Util.MUSIC_ACTION_ARTIST);
+		intent.putExtra(Util.KEY_TITLE, getArtist());
+		sendBroadcast(intent);
+	}
+
+	/**
+	 * 发送当前歌曲专辑名信息的广播
+	 */
+	private void sendAlbumBroad() {
+		Intent intent = new Intent(Util.MUSIC_ACTION_ALBUM);
+		intent.putExtra(Util.KEY_ALBUM, getAlbum());
+		sendBroadcast(intent);
+	}
+
+	/**
+	 * 设置音乐文件的路径
+	 * 
+	 * @param path
+	 *            音乐文件的路径
+	 */
+	private void setMusicPath(String path) {
+		this.mPath = path;
+	}
+
+	/**
+	 * 位MediaPlayer设置DataSource
+	 * 
+	 * @param datasource
+	 *            音乐文件路径
+	 */
+	private void setMediaPlayerDataSource(String datasource) {
+		if (mMediaPlayer != null) {
+			try {
+				mMediaPlayer.setDataSource(datasource);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * 播放
 	 */
 	private void play() {
 		if (mMediaPlayer != null) {
-			mMediaPlayer.start();
+			if (!isplaying()) {
+				mMediaPlayer.start();
+			}
 			showNotification();
+
+			sendCurrentBroad();
+			sendDurationBroad();
+			sendTitleBroad();
+			sendArtistBroad();
+			sendAlbumBroad();
 		}
 	}
 
@@ -158,7 +264,11 @@ public class MusicService extends Service implements
 	 */
 	private void pause() {
 		if (mMediaPlayer != null) {
-			mMediaPlayer.pause();
+			if (isplaying()) {
+				mMediaPlayer.pause();
+			} else {
+				mMediaPlayer.start();
+			}
 		}
 	}
 
@@ -170,6 +280,8 @@ public class MusicService extends Service implements
 			mMediaPlayer.stop();
 		}
 		mNotificationManager.cancelAll();
+
+		mHandler.removeMessages(Util.msg_current);
 	}
 
 	/**
@@ -244,20 +356,54 @@ public class MusicService extends Service implements
 	}
 
 	/**
-	 * @return 歌手名
+	 * @return 歌曲名
 	 */
 	private String getTitle() {
 		return mTitle;
 	}
 
 	/**
-	 * 设置歌手名
+	 * 设置歌曲名
 	 * 
 	 * @param title
-	 *            歌手名
+	 *            歌曲名
 	 */
 	private void setTitle(String title) {
 		this.mTitle = title;
+	}
+
+	/**
+	 * @return 歌手名
+	 */
+	private String getArtist() {
+		return mArtist;
+	}
+
+	/**
+	 * 设置歌手名
+	 * 
+	 * @param artist
+	 *            歌手名
+	 */
+	private void setArtist(String artist) {
+		this.mArtist = artist;
+	}
+
+	/**
+	 * @return 专辑名
+	 */
+	private String getAlbum() {
+		return mAlbum;
+	}
+
+	/**
+	 * 设置专辑名
+	 * 
+	 * @param album
+	 *            专辑名
+	 */
+	private void setAlbum(String album) {
+		this.mAlbum = album;
 	}
 
 	/**
