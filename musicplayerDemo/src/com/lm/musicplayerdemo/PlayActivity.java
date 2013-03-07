@@ -51,13 +51,15 @@ public class PlayActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		
+
 		Intent intent = getIntent();
-		mTitle = intent.getStringExtra(Util.KEY_TITLE);
-		mArtist = intent.getStringExtra(Util.KEY_ARTIST);
-		mCurrentTime = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
-		mDuration = intent.getIntExtra(Util.KEY_DURATION, 0);
-		mPath = intent.getStringExtra(Util.KEY_PATH);
+		if (intent != null) {
+			mTitle = intent.getStringExtra(Util.KEY_TITLE);
+			mArtist = intent.getStringExtra(Util.KEY_ARTIST);
+			mCurrentTime = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
+			mDuration = intent.getIntExtra(Util.KEY_DURATION, 0);
+			mPath = intent.getStringExtra(Util.KEY_PATH);
+		}
 	}
 
 	/**
