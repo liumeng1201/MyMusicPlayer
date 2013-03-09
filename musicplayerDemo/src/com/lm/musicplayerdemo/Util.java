@@ -9,6 +9,7 @@ public class Util {
 	public static final String MUSIC_ACTION_TITLE = "music.title";
 	public static final String MUSIC_ACTION_ALBUM = "music.album";
 	public static final String MUSIC_ACTION_PATH = "music.path";
+	public static final String MUSIC_ACTION_ISPLAYING = "music.isplaying";
 
 	// intent key
 	public static final String KEY_CURRENTTIME = "currenttime";
@@ -18,6 +19,7 @@ public class Util {
 	public static final String KEY_ALBUM = "album";
 	public static final String KEY_PROGRESS = "progress";
 	public static final String KEY_PATH = "path";
+	public static final String KEY_ISPLAYING = "isplaying";
 
 	// handler message.what
 	public static final int msg_current = 1;
@@ -26,6 +28,7 @@ public class Util {
 	public static final int msg_artist = 4;
 	public static final int msg_album = 5;
 	public static final int msg_progress = 6;
+	public static final int msg_isplaying = 7;
 
 	// operate number
 	public static final String OPERATE_NUMBER = "operate_number";

@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
@@ -55,7 +57,91 @@ public class PlayActivity extends Activity {
 	private TextView tvDuration;
 	private SeekBar seekbar;
 
-	private OnClickListener playcontrolListener;
+	/**
+	 * 播放控制按钮点击事件监听
+	 */
+	private OnClickListener playcontrolListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			switch (v.getId()) {
+			case R.id.play:
+				if (isPlaying()) {
+					pause();
+				} else {
+					play();
+				}
+				break;
+			case R.id.next:
+				next();
+				break;
+			case R.id.previous:
+				previous();
+				break;
+			}
+		}
+	};
+
+	/**
+	 * seekbar进度条改变监听
+	 */
+	private OnSeekBarChangeListener seekbarChangeListener = new OnSeekBarChangeListener() {
+		int temp = 0;
+
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+			progresschange(temp);
+		}
+
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			// TODO Auto-generated method stub
+			if (fromUser) {
+				temp = progress;
+			}
+		}
+	};
+
+	/**
+	 * 用于接收从MusicService发送过来的广播信息
+	 */
+	protected BroadcastReceiver musicserviceReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			String action = intent.getAction();
+			if (action.equals(Util.MUSIC_ACTION_CURRENTTIME)) {
+				// 当前播放时间
+				int current = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
+				setCurrentTime(current);
+			} else if (action.equals(Util.MUSIC_ACTION_DURATION)) {
+				// 歌曲总时间
+				int duration = intent.getIntExtra(Util.KEY_DURATION, 0);
+				setDuration(duration);
+			} else if (action.equals(Util.MUSIC_ACTION_TITLE)) {
+				// 歌曲名
+				String title = intent.getStringExtra(Util.KEY_TITLE);
+				setTitle(title);
+			} else if (action.equals(Util.MUSIC_ACTION_ARTIST)) {
+				// 歌手名
+				String artist = intent.getStringExtra(Util.KEY_ARTIST);
+				setArtist(artist);
+			} else if (action.equals(Util.MUSIC_ACTION_ALBUM)) {
+				// 专辑名
+				String album = intent.getStringExtra(Util.KEY_ALBUM);
+				setAlbum(album);
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +157,12 @@ public class PlayActivity extends Activity {
 		tvCurrentTime = (TextView) findViewById(R.id.currenttime);
 		tvDuration = (TextView) findViewById(R.id.duration);
 		seekbar = (SeekBar) findViewById(R.id.seekbar);
-		
+
 		btnPlay.setOnClickListener(playcontrolListener);
 		btnNext.setOnClickListener(playcontrolListener);
 		btnPrevious.setOnClickListener(playcontrolListener);
+
+		seekbar.setOnSeekBarChangeListener(seekbarChangeListener);
 
 		init();
 	}
@@ -269,7 +357,7 @@ public class PlayActivity extends Activity {
 	 *            进度条进度
 	 */
 	private void setSeekbarProgress(int progress) {
-
+		seekbar.setProgress(progress);
 	}
 
 	/**
@@ -279,46 +367,27 @@ public class PlayActivity extends Activity {
 	 *            进度条最大值
 	 */
 	private void setSeekbarMax(int max) {
-
+		seekbar.setMax(max);
 	}
 
 	/**
-	 * 用于接收从MusicService发送过来的广播信息
+	 * 停止音乐服务
 	 */
-	protected BroadcastReceiver musicserviceReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			String action = intent.getAction();
-			if (action.equals(Util.MUSIC_ACTION_CURRENTTIME)) {
-				// 当前播放时间
-				int current = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
-				setCurrentTime(current);
-			} else if (action.equals(Util.MUSIC_ACTION_DURATION)) {
-				// 歌曲总时间
-				int duration = intent.getIntExtra(Util.KEY_DURATION, 0);
-				setDuration(duration);
-			} else if (action.equals(Util.MUSIC_ACTION_TITLE)) {
-				// 歌曲名
-				String title = intent.getStringExtra(Util.KEY_TITLE);
-				setTitle(title);
-			} else if (action.equals(Util.MUSIC_ACTION_ARTIST)) {
-				// 歌手名
-				String artist = intent.getStringExtra(Util.KEY_ARTIST);
-				setArtist(artist);
-			} else if (action.equals(Util.MUSIC_ACTION_ALBUM)) {
-				// 专辑名
-				String album = intent.getStringExtra(Util.KEY_ALBUM);
-				setAlbum(album);
-			}
-		}
-	};
+	private void stopMusicService() {
+		Intent intent = new Intent();
+		intent.setAction(Util.MUSIC_SERVICE);
+		stopService(intent);
+	}
 
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		unregisterReceiver(musicserviceReceiver);
+
+		// 如果在退出PlayActivity时为播放暂停状态则关闭MusicService
+		if (!isPlaying()) {
+			stopMusicService();
+		}
 	}
 }

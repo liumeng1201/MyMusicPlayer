@@ -54,6 +54,7 @@ public class MusicService extends Service implements
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+		stop();
 		destory();
 	}
 
@@ -153,6 +154,10 @@ public class MusicService extends Service implements
 						// 发送专辑信息广播
 						sendAlbumBroad();
 						break;
+					case Util.msg_isplaying:
+						// 发送是否正在播放信息广播
+						sendPlayingStateBroad();
+						break;
 					}
 				}
 			};
@@ -205,6 +210,12 @@ public class MusicService extends Service implements
 		sendBroadcast(intent);
 	}
 
+	private void sendPlayingStateBroad() {
+		Intent intent = new Intent(Util.MUSIC_ACTION_ISPLAYING);
+		intent.putExtra(Util.KEY_ISPLAYING, isplaying());
+		sendBroadcast(intent);
+	}
+
 	/**
 	 * 设置音乐文件的路径
 	 * 
@@ -252,11 +263,12 @@ public class MusicService extends Service implements
 			}
 			showNotification();
 
-			sendCurrentBroad();
-			sendDurationBroad();
-			sendTitleBroad();
-			sendArtistBroad();
-			sendAlbumBroad();
+			mHandler.sendEmptyMessage(Util.msg_current);
+			mHandler.sendEmptyMessage(Util.msg_durtion);
+			mHandler.sendEmptyMessage(Util.msg_title);
+			mHandler.sendEmptyMessage(Util.msg_artist);
+			mHandler.sendEmptyMessage(Util.msg_album);
+			mHandler.sendEmptyMessage(Util.msg_isplaying);
 		}
 	}
 
@@ -451,4 +463,5 @@ public class MusicService extends Service implements
 	public void onCompletion(MediaPlayer mp) {
 		next();
 	}
+
 }
