@@ -225,6 +225,7 @@ public class MusicService extends Service implements
 		if (mMediaPlayer != null) {
 			try {
 				mMediaPlayer.setDataSource(datasource);
+				mMediaPlayer.prepare();
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -437,6 +438,7 @@ public class MusicService extends Service implements
 						PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(contentIntent);
 		mNotification = builder.getNotification();
+		mNotification.flags = Notification.FLAG_ONGOING_EVENT;
 		mNotificationManager.notify(0, mNotification);
 	}
 

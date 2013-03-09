@@ -6,6 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class PlayActivity extends Activity {
 	/**
@@ -40,11 +45,38 @@ public class PlayActivity extends Activity {
 
 	private boolean isplaying = false;
 
+	// 对Activity中的各个控件进行声明
+	private ImageButton btnPlay;
+	private ImageButton btnNext;
+	private ImageButton btnPrevious;
+	private TextView tvTitle;
+	private TextView tvArtist;
+	private TextView tvCurrentTime;
+	private TextView tvDuration;
+	private SeekBar seekbar;
+
+	private OnClickListener playcontrolListener;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.play_activity);
+
+		btnPlay = (ImageButton) findViewById(R.id.play);
+		btnNext = (ImageButton) findViewById(R.id.next);
+		btnPrevious = (ImageButton) findViewById(R.id.previous);
+		tvTitle = (TextView) findViewById(R.id.music_title);
+		tvArtist = (TextView) findViewById(R.id.music_artist);
+		tvCurrentTime = (TextView) findViewById(R.id.currenttime);
+		tvDuration = (TextView) findViewById(R.id.duration);
+		seekbar = (SeekBar) findViewById(R.id.seekbar);
+		
+		btnPlay.setOnClickListener(playcontrolListener);
+		btnNext.setOnClickListener(playcontrolListener);
+		btnPrevious.setOnClickListener(playcontrolListener);
+
+		init();
 	}
 
 	@Override
@@ -52,6 +84,7 @@ public class PlayActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onStart();
 
+		// 获取启动该Activity的intent,并从中获取与歌曲相关的信息
 		Intent intent = getIntent();
 		if (intent != null) {
 			mTitle = intent.getStringExtra(Util.KEY_TITLE);
@@ -59,6 +92,11 @@ public class PlayActivity extends Activity {
 			mCurrentTime = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
 			mDuration = intent.getIntExtra(Util.KEY_DURATION, 0);
 			mPath = intent.getStringExtra(Util.KEY_PATH);
+		}
+
+		if (mPath != null) {
+			setMusicSource(mPath);
+			play();
 		}
 	}
 
@@ -276,4 +314,11 @@ public class PlayActivity extends Activity {
 			}
 		}
 	};
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		unregisterReceiver(musicserviceReceiver);
+	}
 }
