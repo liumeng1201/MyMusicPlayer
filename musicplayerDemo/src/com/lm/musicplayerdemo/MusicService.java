@@ -219,7 +219,7 @@ public class MusicService extends Service implements
 	 */
 	private void sendArtistBroad() {
 		Intent intent = new Intent(Util.MUSIC_ACTION_ARTIST);
-		intent.putExtra(Util.KEY_TITLE, getArtist());
+		intent.putExtra(Util.KEY_ARTIST, getArtist());
 		sendBroadcast(intent);
 	}
 
