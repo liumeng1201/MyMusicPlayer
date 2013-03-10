@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -152,24 +153,9 @@ public class PlayActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.play_activity);
-
-		btnPlay = (ImageButton) findViewById(R.id.play);
-		btnNext = (ImageButton) findViewById(R.id.next);
-		btnPrevious = (ImageButton) findViewById(R.id.previous);
-		tvTitle = (TextView) findViewById(R.id.music_title);
-		tvArtist = (TextView) findViewById(R.id.music_artist);
-		tvCurrentTime = (TextView) findViewById(R.id.currenttime);
-		tvDuration = (TextView) findViewById(R.id.duration);
-		seekbar = (SeekBar) findViewById(R.id.seekbar);
-
-		btnPlay.setOnClickListener(playcontrolListener);
-		btnNext.setOnClickListener(playcontrolListener);
-		btnPrevious.setOnClickListener(playcontrolListener);
-
-		seekbar.setOnSeekBarChangeListener(seekbarChangeListener);
-
 		init();
+
+		initBroadcastReceiver();
 	}
 
 	@Override
@@ -193,10 +179,67 @@ public class PlayActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			init();
+			setSongInfo();
+		} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+			init();
+			setSongInfo();
+		}
+	}
+
 	/**
-	 * 初始化,注册要接收的广播
+	 * 为各个控件设置值
+	 */
+	private void setSongInfo() {
+		if (mTitle != null && tvTitle != null) {
+			tvTitle.setText(mTitle);
+		}
+		if (mArtist != null && tvArtist != null) {
+			tvArtist.setText(mArtist);
+		}
+		if (tvCurrentTime != null) {
+			tvCurrentTime.setText(Util.timeToString(mCurrentTime));
+		}
+		if (tvDuration != null) {
+			tvDuration.setText(Util.timeToString(mDuration));
+		}
+		if (seekbar != null) {
+			seekbar.setProgress(mCurrentTime);
+			seekbar.setMax(mDuration);
+		}
+	}
+
+	/**
+	 * 初始化Activity主界面,并获取各个控件的实例
 	 */
 	private void init() {
+		setContentView(R.layout.play_activity);
+
+		btnPlay = (ImageButton) findViewById(R.id.play);
+		btnNext = (ImageButton) findViewById(R.id.next);
+		btnPrevious = (ImageButton) findViewById(R.id.previous);
+		tvTitle = (TextView) findViewById(R.id.music_title);
+		tvArtist = (TextView) findViewById(R.id.music_artist);
+		tvCurrentTime = (TextView) findViewById(R.id.currenttime);
+		tvDuration = (TextView) findViewById(R.id.duration);
+		seekbar = (SeekBar) findViewById(R.id.seekbar);
+
+		btnPlay.setOnClickListener(playcontrolListener);
+		btnNext.setOnClickListener(playcontrolListener);
+		btnPrevious.setOnClickListener(playcontrolListener);
+
+		seekbar.setOnSeekBarChangeListener(seekbarChangeListener);
+	}
+
+	/**
+	 * 初始化广播接收者,注册要接收的广播
+	 */
+	private void initBroadcastReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Util.MUSIC_ACTION_CURRENTTIME);
 		filter.addAction(Util.MUSIC_ACTION_DURATION);

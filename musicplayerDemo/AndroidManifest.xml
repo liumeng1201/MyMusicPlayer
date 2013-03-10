@@ -22,7 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.lm.musicplayerdemo.PlayActivity" />
+        <activity
+            android:name="com.lm.musicplayerdemo.PlayActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service android:name="com.lm.musicplayerdemo.MusicService" >
             <intent-filter>
