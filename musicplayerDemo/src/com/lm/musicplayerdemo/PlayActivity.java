@@ -16,34 +16,18 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
-	/**
-	 * 歌曲名
-	 */
+	// 歌曲名
 	private String mTitle;
-
-	/**
-	 * 歌手名
-	 */
+	// 歌手名
 	private String mArtist;
-
-	/**
-	 * 专辑名
-	 */
+	// 专辑名
 	private String mAlbum;
-
-	/**
-	 * 当前播放时间
-	 */
+	// 当前播放时间
 	private int mCurrentTime;
-
-	/**
-	 * 总时间
-	 */
+	// 总时间
 	private int mDuration;
 
-	/**
-	 * 音乐文件的路径
-	 */
+	// 音乐文件的路径
 	private String mPath;
 
 	private boolean isplaying = false;
