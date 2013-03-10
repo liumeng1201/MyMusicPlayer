@@ -42,6 +42,9 @@ public class MusicService extends Service implements
 	private static Notification mNotification;
 	private static NotificationManager mNotificationManager;
 
+	// SongInfo类实例,用来获歌曲相关信息
+	private SongInfo mSongInfo;
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
@@ -165,6 +168,25 @@ public class MusicService extends Service implements
 	}
 
 	/**
+	 * 设置歌曲的相关信息
+	 * 
+	 * @param filepath
+	 *            歌曲文件路径
+	 */
+	private void setSongInfo(String filepath) {
+		mSongInfo = new SongInfo(filepath);
+		if (mSongInfo.getTitle() != null) {
+			setTitle(mSongInfo.getTitle());
+		}
+		if (mSongInfo.getArtist() != null) {
+			setArtist(mSongInfo.getArtist());
+		}
+		if (mSongInfo.getAlbum() != null) {
+			setAlbum(mSongInfo.getAlbum());
+		}
+	}
+
+	/**
 	 * 发送当前歌曲播放时间的广播
 	 */
 	private void sendCurrentBroad() {
@@ -261,6 +283,8 @@ public class MusicService extends Service implements
 			if (!isplaying()) {
 				mMediaPlayer.start();
 			}
+			setSongInfo(mPath);
+
 			showNotification();
 
 			mHandler.sendEmptyMessage(Util.msg_current);
@@ -279,10 +303,13 @@ public class MusicService extends Service implements
 		if (mMediaPlayer != null) {
 			if (isplaying()) {
 				mMediaPlayer.pause();
+				mNotificationManager.cancelAll();
 			} else {
 				mMediaPlayer.start();
+				showNotification();
 			}
 		}
+		mHandler.sendEmptyMessage(Util.msg_isplaying);
 	}
 
 	/**
@@ -292,6 +319,7 @@ public class MusicService extends Service implements
 		if (mMediaPlayer != null) {
 			mMediaPlayer.stop();
 		}
+		mHandler.sendEmptyMessage(Util.msg_isplaying);
 		mNotificationManager.cancelAll();
 
 		mHandler.removeMessages(Util.msg_current);

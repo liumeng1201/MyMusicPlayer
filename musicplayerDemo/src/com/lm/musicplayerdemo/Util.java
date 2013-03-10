@@ -43,4 +43,31 @@ public class Util {
 
 	// service name
 	public static final String MUSIC_SERVICE = "com.lm.musicplayer.MUSIC_SERVICE";
+
+	/**
+	 * 将时间从int型转换为字符串,并以xx:xx的格式返回
+	 * 
+	 * @param time
+	 *            时间数值
+	 * @return xx:xx格式的时间
+	 */
+	public static String timeToString(int time) {
+		String timeStr = null;
+		int minute = 0;
+		int second = 0;
+		time = time / 1000;
+		minute = time / 60;
+		second = time % 60;
+		if ((minute >= 0) && (minute <= 9)) {
+			timeStr = "0" + minute + ":";
+		} else {
+			timeStr = minute + ":";
+		}
+		if ((second >= 0) && (second <= 9)) {
+			timeStr += "0" + second;
+		} else {
+			timeStr += second + "";
+		}
+		return timeStr;
+	}
 }

@@ -139,6 +139,11 @@ public class PlayActivity extends Activity {
 				// 专辑名
 				String album = intent.getStringExtra(Util.KEY_ALBUM);
 				setAlbum(album);
+			} else if (action.equals(Util.MUSIC_ACTION_ISPLAYING)) {
+				// 歌曲播放状态
+				boolean playstate = intent.getBooleanExtra(Util.KEY_ISPLAYING,
+						false);
+				setPlayingState(playstate);
 			}
 		}
 	};
@@ -307,6 +312,7 @@ public class PlayActivity extends Activity {
 	private void setCurrentTime(int current) {
 		this.mCurrentTime = current;
 		setSeekbarProgress(mCurrentTime);
+		tvCurrentTime.setText(Util.timeToString(current));
 	}
 
 	/**
@@ -318,6 +324,7 @@ public class PlayActivity extends Activity {
 	private void setDuration(int duration) {
 		this.mDuration = duration;
 		setSeekbarMax(mDuration);
+		tvDuration.setText(Util.timeToString(duration));
 	}
 
 	/**
@@ -328,6 +335,7 @@ public class PlayActivity extends Activity {
 	 */
 	private void setTitle(String title) {
 		this.mTitle = title;
+		tvTitle.setText(title);
 	}
 
 	/**
@@ -338,6 +346,7 @@ public class PlayActivity extends Activity {
 	 */
 	private void setArtist(String artist) {
 		this.mArtist = artist;
+		tvArtist.setText(artist);
 	}
 
 	/**
