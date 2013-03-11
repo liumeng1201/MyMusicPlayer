@@ -108,7 +108,9 @@ public class MusicService extends Service implements
 			setMediaPlayerDataSource(mPath);
 		}
 
-		play();
+		if (isplaying()) {
+			play();
+		}
 
 		return super.onStartCommand(intent, flags, startId);
 	}

@@ -249,6 +249,7 @@ public class PlayActivity extends Activity {
 		filter.addAction(Util.MUSIC_ACTION_TITLE);
 		filter.addAction(Util.MUSIC_ACTION_ARTIST);
 		filter.addAction(Util.MUSIC_ACTION_ALBUM);
+		filter.addAction(Util.MUSIC_ACTION_ISPLAYING);
 
 		// 注册广播接收者
 		registerReceiver(musicserviceReceiver, filter);
