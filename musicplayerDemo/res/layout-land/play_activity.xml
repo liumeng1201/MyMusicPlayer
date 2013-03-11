@@ -79,7 +79,7 @@
             android:id="@+id/music_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" >
+            android:layout_weight="2" >
 
             <SeekBar
                 android:id="@+id/seekbar"
