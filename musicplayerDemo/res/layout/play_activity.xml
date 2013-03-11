@@ -4,17 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <!-- <com.lm.musicplayerdemo.LyricView -->
-    <!-- android:id="@+id/lyric_display" -->
-    <!-- android:layout_width="match_parent" -->
-    <!-- android:layout_height="match_parent" -->
-    <!-- android:layout_weight="1" /> -->
+    <com.lm.musicplayerdemo.LyricView
+        android:id="@+id/lyric_display"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
 
     <TextView
+        android:id="@+id/no_lyric"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="view" />
+        android:text="@string/no_lyric"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"

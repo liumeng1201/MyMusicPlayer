@@ -22,7 +22,8 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
 				intent.setClass(MainActivity.this, PlayActivity.class);
-				intent.putExtra(Util.KEY_PATH, "/sdcard/天高地厚.mp3");
+				intent.putExtra(Util.KEY_PATH, "/sdcard/天高地厚-信乐团.mp3");
+				intent.putExtra(Util.KEY_LYRIC_PATH, "/sdcard/天高地厚-信乐团.lrc");
 				startActivity(intent);
 			}
 		});

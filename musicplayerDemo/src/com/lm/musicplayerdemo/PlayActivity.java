@@ -1,5 +1,9 @@
 package com.lm.musicplayerdemo;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,9 +11,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -41,6 +46,34 @@ public class PlayActivity extends Activity {
 	private TextView tvCurrentTime;
 	private TextView tvDuration;
 	private SeekBar seekbar;
+
+	// 显示歌词的view
+	private LyricView lyricView;
+	// 歌词读取类实例
+	private LyricRead lyricRead;
+	// 要显示的第几行的歌词
+	private int lyricIndex;
+	// 歌词行集,将歌词以行存储并将所有行放到一个list中
+	private List<LyricContent> lyricList = new ArrayList<LyricContent>();
+	// 歌词文件路径
+	private String mLyricPath;
+	// 没有歌词文件时的替代TextView
+	private TextView mNoLyric;
+
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case Util.msg_update_lyric:
+				lyricView.setIndex(getLyricIndex());
+				lyricView.invalidate();
+				mHandler.sendEmptyMessageDelayed(Util.msg_update_lyric, 100);
+				break;
+			}
+		}
+	};
 
 	/**
 	 * 播放控制按钮点击事件监听
@@ -155,11 +188,16 @@ public class PlayActivity extends Activity {
 			mCurrentTime = intent.getIntExtra(Util.KEY_CURRENTTIME, 0);
 			mDuration = intent.getIntExtra(Util.KEY_DURATION, 0);
 			mPath = intent.getStringExtra(Util.KEY_PATH);
+			mLyricPath = intent.getStringExtra(Util.KEY_LYRIC_PATH);
 		}
 
 		if (mPath != null) {
 			setMusicSource(mPath);
 			play();
+		}
+		
+		if (mLyricPath != null) {
+			initLyric(mLyricPath);
 		}
 	}
 
@@ -177,28 +215,6 @@ public class PlayActivity extends Activity {
 	}
 
 	/**
-	 * 为各个控件设置值
-	 */
-	private void setSongInfo() {
-		if (mTitle != null && tvTitle != null) {
-			tvTitle.setText(mTitle);
-		}
-		if (mArtist != null && tvArtist != null) {
-			tvArtist.setText(mArtist);
-		}
-		if (tvCurrentTime != null) {
-			tvCurrentTime.setText(Util.timeToString(mCurrentTime));
-		}
-		if (tvDuration != null) {
-			tvDuration.setText(Util.timeToString(mDuration));
-		}
-		if (seekbar != null) {
-			seekbar.setProgress(mCurrentTime);
-			seekbar.setMax(mDuration);
-		}
-	}
-
-	/**
 	 * 初始化Activity主界面,并获取各个控件的实例
 	 */
 	private void init() {
@@ -212,6 +228,9 @@ public class PlayActivity extends Activity {
 		tvCurrentTime = (TextView) findViewById(R.id.currenttime);
 		tvDuration = (TextView) findViewById(R.id.duration);
 		seekbar = (SeekBar) findViewById(R.id.seekbar);
+		lyricView = (LyricView) findViewById(R.id.lyric_display);
+		mNoLyric = (TextView) findViewById(R.id.no_lyric);
+		lyricRead = new LyricRead();
 
 		btnPlay.setOnClickListener(playcontrolListener);
 		btnNext.setOnClickListener(playcontrolListener);
@@ -235,6 +254,46 @@ public class PlayActivity extends Activity {
 		registerReceiver(musicserviceReceiver, filter);
 	}
 
+	/**
+	 * 初始化歌词相关信息,并显示
+	 * 
+	 * @param lyricpath
+	 *            歌词文件路径
+	 */
+	private void initLyric(String lyricpath) {
+		File f = new File(lyricpath);
+		if (f.exists()) {
+			// 歌词文件存在
+			// 设置LyricView可见
+			mNoLyric.setVisibility(View.GONE);
+			lyricView.setVisibility(View.VISIBLE);
+
+			// 读取lyric文件
+			try {
+				lyricRead.readLyric(lyricpath);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// 获取歌词资源,并将其按行存储
+			lyricList = lyricRead.getLyricContent();
+			// 为LyricView设置歌词资源
+			lyricView.setSentenceEntities(lyricList);
+
+			// 向系统发送消息,开始更新lyricView
+			mHandler.sendEmptyMessage(Util.msg_update_lyric);
+		} else {
+			// 歌词文件不存在
+			mNoLyric.setVisibility(View.VISIBLE);
+			lyricView.setVisibility(View.GONE);
+		}
+	}
+
+	/**
+	 * 设置音乐文件的路径,向MusicService发送音乐文件路径
+	 * 
+	 * @param path
+	 *            音乐文件路径
+	 */
 	private void setMusicSource(String path) {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
@@ -413,6 +472,58 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setAction(Util.MUSIC_SERVICE);
 		stopService(intent);
+	}
+
+	/**
+	 * 为各个控件设置值
+	 */
+	private void setSongInfo() {
+		if (mTitle != null && tvTitle != null) {
+			tvTitle.setText(mTitle);
+		}
+		if (mArtist != null && tvArtist != null) {
+			tvArtist.setText(mArtist);
+		}
+		if (tvCurrentTime != null) {
+			tvCurrentTime.setText(Util.timeToString(mCurrentTime));
+		}
+		if (tvDuration != null) {
+			tvDuration.setText(Util.timeToString(mDuration));
+		}
+		if (seekbar != null) {
+			seekbar.setProgress(mCurrentTime);
+			seekbar.setMax(mDuration);
+		}
+	}
+
+	/**
+	 * 获取当前应当显示的歌词的行号
+	 * 
+	 * @return 歌词的行号
+	 */
+	private int getLyricIndex() {
+		if (mCurrentTime < mDuration) {
+			for (int i = 0; i < lyricList.size(); i++) {
+				if (i < lyricList.size() - 1) {
+					if (mCurrentTime < lyricList.get(i).getLyricTime()
+							&& i == 0) {
+						lyricIndex = i;
+					}
+
+					if (mCurrentTime > lyricList.get(i).getLyricTime()
+							&& mCurrentTime < lyricList.get(i + 1).getLyricTime()) {
+						lyricIndex = i;
+					}
+				}
+
+				if (i == lyricList.size() - 1
+						&& mCurrentTime > lyricList.get(i).getLyricTime()) {
+					lyricIndex = i;
+				}
+			}
+		}
+
+		return lyricIndex;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.util.AttributeSet;
 import android.widget.TextView;
 
 /**
@@ -64,6 +65,11 @@ public class LyricView extends TextView {
 	public LyricView(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
+		init();
+	}
+	
+	public LyricView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 		init();
 	}
 

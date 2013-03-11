@@ -20,6 +20,7 @@ public class Util {
 	public static final String KEY_PROGRESS = "progress";
 	public static final String KEY_PATH = "path";
 	public static final String KEY_ISPLAYING = "isplaying";
+	public static final String KEY_LYRIC_PATH = "lyricpath";
 
 	// handler message.what
 	public static final int msg_current = 1;
@@ -29,6 +30,7 @@ public class Util {
 	public static final int msg_album = 5;
 	public static final int msg_progress = 6;
 	public static final int msg_isplaying = 7;
+	public static final int msg_update_lyric = 8;
 
 	// operate number
 	public static final String OPERATE_NUMBER = "operate_number";
