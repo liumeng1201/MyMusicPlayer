@@ -494,6 +494,9 @@ public class PlayActivity extends Activity {
 			seekbar.setProgress(mCurrentTime);
 			seekbar.setMax(mDuration);
 		}
+		if (lyricView != null) {
+			initLyric(mLyricPath);
+		}
 	}
 
 	/**
