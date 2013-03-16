@@ -40,6 +40,7 @@ public class Util {
 	public static final int MUSIC_OP_NEXT = 4;
 	public static final int MUSIC_OP_PREVIOUS = 5;
 	public static final int MUSIC_OP_PROGRESS_CHANGE = 6;
+	public static final int MUSIC_OP_UPDATE_DATA = 7;
 
 	public static final boolean IS_MUSIC_PLAYINT = false;
 

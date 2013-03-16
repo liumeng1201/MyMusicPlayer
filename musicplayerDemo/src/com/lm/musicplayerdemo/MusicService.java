@@ -41,6 +41,7 @@ public class MusicService extends Service implements
 
 	private static Notification mNotification;
 	private static NotificationManager mNotificationManager;
+	private Builder nfbuilder;
 
 	// SongInfo类实例,用来获歌曲相关信息
 	private SongInfo mSongInfo;
@@ -96,6 +97,9 @@ public class MusicService extends Service implements
 			int progress = intent.getIntExtra(Util.MUSIC_ACTION_PROGRESS, 0);
 			progresschange(progress);
 			break;
+		case Util.MUSIC_OP_UPDATE_DATA:
+			// 向PlayActivity更新信息
+			updataData();
 		default:
 			break;
 		}
@@ -106,10 +110,6 @@ public class MusicService extends Service implements
 
 		if (mPath != null) {
 			setMediaPlayerDataSource(mPath);
-		}
-
-		if (isplaying()) {
-			play();
 		}
 
 		return super.onStartCommand(intent, flags, startId);
@@ -186,6 +186,18 @@ public class MusicService extends Service implements
 		if (mSongInfo.getAlbum() != null) {
 			setAlbum(mSongInfo.getAlbum());
 		}
+	}
+	
+	/**
+	 * 向PlayActivity更新数据
+	 */
+	private void updataData() {
+		mHandler.sendEmptyMessage(Util.msg_current);
+		mHandler.sendEmptyMessage(Util.msg_durtion);
+		mHandler.sendEmptyMessage(Util.msg_title);
+		mHandler.sendEmptyMessage(Util.msg_artist);
+		mHandler.sendEmptyMessage(Util.msg_album);
+		mHandler.sendEmptyMessage(Util.msg_isplaying);
 	}
 
 	/**
@@ -454,19 +466,23 @@ public class MusicService extends Service implements
 	 */
 	private void showNotification() {
 		// 获取系统通知栏服务对象
-		mNotificationManager = (NotificationManager) (MusicService.this)
-				.getSystemService(Context.NOTIFICATION_SERVICE);
+		if (mNotificationManager == null) {
+			mNotificationManager = (NotificationManager) (MusicService.this)
+					.getSystemService(Context.NOTIFICATION_SERVICE);
+		}
 
-		Builder builder = new Notification.Builder(MusicService.this);
+		if (nfbuilder == null) {
+			nfbuilder = new Notification.Builder(MusicService.this);
+		}
 		// 设置通知栏要显示的内容
-		builder.setSmallIcon(R.drawable.beats_logo_s);
+		nfbuilder.setSmallIcon(R.drawable.beats_logo_s);
 		Bitmap icon = BitmapFactory.decodeResource(getResources(),
 				R.drawable.beats_logo_l);
-		builder.setLargeIcon(icon);
-		builder.setContentTitle(mTitle);
-		builder.setContentText(mArtist);
-		builder.setAutoCancel(false);
-		builder.setWhen(System.currentTimeMillis());
+		nfbuilder.setLargeIcon(icon);
+		nfbuilder.setContentTitle(mTitle);
+		nfbuilder.setContentText(mArtist);
+		nfbuilder.setAutoCancel(false);
+		nfbuilder.setWhen(System.currentTimeMillis());
 
 		mCurrentTime = getCurrentTime();
 		Intent intent = new Intent(MusicService.this, PlayActivity.class);
@@ -478,8 +494,10 @@ public class MusicService extends Service implements
 		PendingIntent contentIntent = PendingIntent
 				.getActivity(MusicService.this, 0, intent,
 						PendingIntent.FLAG_UPDATE_CURRENT);
-		builder.setContentIntent(contentIntent);
-		mNotification = builder.getNotification();
+		nfbuilder.setContentIntent(contentIntent);
+		if (mNotification == null) {
+			mNotification = nfbuilder.getNotification();
+		}
 		mNotification.flags = Notification.FLAG_ONGOING_EVENT;
 		mNotificationManager.notify(0, mNotification);
 	}

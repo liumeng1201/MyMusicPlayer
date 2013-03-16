@@ -253,6 +253,8 @@ public class PlayActivity extends Activity {
 
 		// 注册广播接收者
 		registerReceiver(musicserviceReceiver, filter);
+		
+		ntServiceUpdateData();
 	}
 
 	/**
@@ -372,6 +374,16 @@ public class PlayActivity extends Activity {
 		intent.putExtra(Util.MUSIC_ACTION_PROGRESS, progress);
 		startService(intent);
 	}
+	
+	/**
+	 * 通知MusicService更新歌曲相关信息
+	 */
+	private void ntServiceUpdateData() {
+		Intent intent = new Intent();
+		intent.setAction(Util.MUSIC_SERVICE);
+		intent.putExtra(Util.OPERATE_NUMBER, Util.MUSIC_OP_UPDATE_DATA);
+		startService(intent);
+	};
 
 	/**
 	 * @return 是否正在播放音乐
