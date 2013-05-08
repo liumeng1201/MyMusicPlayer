@@ -5,6 +5,8 @@ public class songBean {
 	int id;
 	// 歌曲名
 	String title;
+	// 歌手名
+	String artist;
 	// 歌曲专辑名
 	String album;
 	// 歌曲路径
@@ -12,9 +14,11 @@ public class songBean {
 	// 歌曲时长
 	int duration;
 
-	songBean(int id, String title, String album, String url, int duration) {
+	songBean(int id, String title, String artist, String album, String url,
+			int duration) {
 		this.id = id;
 		this.title = title;
+		this.artist = artist;
 		this.album = album;
 		this.url = url;
 		this.duration = duration;

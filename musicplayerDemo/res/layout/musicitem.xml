@@ -18,10 +18,10 @@
         android:layout_height="match_parent" >
 
         <TextView
-            android:id="@+id/musicitemalbum"
+            android:id="@+id/musicitemartist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="album" />
+            android:text="artist" />
 
         <TextView
             android:id="@+id/musicitemtime"
