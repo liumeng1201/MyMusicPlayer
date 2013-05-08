@@ -13,11 +13,12 @@ import android.widget.TextView;
 import com.lm.musicplayerdemo.R;
 import com.lm.musicplayerdemo.Util;
 
-class musiclistAdapter extends BaseAdapter {
+public class musiclistAdapter extends BaseAdapter {
 	private Context context = null;
 	private List<HashMap<String, songBean>> list = null;
 
-	musiclistAdapter(Context context, List<HashMap<String, songBean>> list) {
+	public musiclistAdapter(Context context,
+			List<HashMap<String, songBean>> list) {
 		this.context = context;
 		this.list = list;
 	}

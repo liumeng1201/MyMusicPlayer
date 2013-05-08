@@ -14,7 +14,7 @@ public class songBean {
 	// 歌曲时长
 	int duration;
 
-	songBean(int id, String title, String artist, String album, String url,
+	public songBean(int id, String title, String artist, String album, String url,
 			int duration) {
 		this.id = id;
 		this.title = title;

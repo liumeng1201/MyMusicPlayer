@@ -14,16 +14,14 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		Button btn = (Button) findViewById(R.id.btnplay);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(MainActivity.this, PlayActivity.class);
-				intent.putExtra(Util.KEY_PATH, "/sdcard/天高地厚-信乐团.mp3");
-				intent.putExtra(Util.KEY_LYRIC_PATH, "/sdcard/天高地厚-信乐团.lrc");
+				intent.setClass(MainActivity.this, MusicListActivity.class);
 				startActivity(intent);
 			}
 		});

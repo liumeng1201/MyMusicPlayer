@@ -73,4 +73,13 @@ public class Util {
 		}
 		return timeStr;
 	}
+
+	public static String getLrcName(String url) {
+		String lrc_url = "";
+		String[] arrtmp = url.split("\\.");
+		for (int i = 0; i < arrtmp.length - 1; i++) {
+			lrc_url = lrc_url + arrtmp[i];
+		}
+		return (lrc_url + ".lrc");
+	}
 }
