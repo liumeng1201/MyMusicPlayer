@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lm.musicplayerdemo.R;
 import com.lm.musicplayerdemo.Util;
@@ -42,7 +43,7 @@ public class Test extends Activity {
 		Cursor cursor = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
 		cursor.moveToFirst();
-		if (cursor.moveToNext()) {
+		while (cursor.moveToNext()) {
 			// 歌曲ID
 			int id = cursor.getInt(cursor
 					.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
@@ -131,7 +132,6 @@ public class Test extends Activity {
 
 			return convertView;
 		}
-
 	}
 
 	class ViewHolder {
