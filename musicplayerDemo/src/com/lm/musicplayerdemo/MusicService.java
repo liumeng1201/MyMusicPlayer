@@ -16,6 +16,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
+import com.lm.musicplayerdemo.test.MyApp;
+
 public class MusicService extends Service implements
 		MediaPlayer.OnCompletionListener {
 	// MediaPlayer对象
@@ -46,10 +48,14 @@ public class MusicService extends Service implements
 	// SongInfo类实例,用来获歌曲相关信息
 	private SongInfo mSongInfo;
 
+	private MyApp myapp = null;
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+
+		myapp = new MyApp();
 
 		init();
 	}
@@ -108,8 +114,10 @@ public class MusicService extends Service implements
 		String musicpath = intent.getStringExtra(Util.KEY_PATH);
 		setMusicPath(musicpath);
 
-		if (mPath != null) {
+		if ((mPath != null) && (mPath != myapp.lastMP3)) {
+			stop();
 			setMediaPlayerDataSource(mPath);
+			myapp.setLastMP3(mPath);
 		}
 
 		return super.onStartCommand(intent, flags, startId);
@@ -187,7 +195,7 @@ public class MusicService extends Service implements
 			setAlbum(mSongInfo.getAlbum());
 		}
 	}
-	
+
 	/**
 	 * 向PlayActivity更新数据
 	 */
@@ -259,7 +267,9 @@ public class MusicService extends Service implements
 	 *            音乐文件的路径
 	 */
 	private void setMusicPath(String path) {
-		this.mPath = path;
+		if (path != null) {
+			this.mPath = path;
+		}
 	}
 
 	/**
@@ -333,10 +343,16 @@ public class MusicService extends Service implements
 		if (mMediaPlayer != null) {
 			mMediaPlayer.stop();
 		}
-		mHandler.sendEmptyMessage(Util.msg_isplaying);
-		mNotificationManager.cancelAll();
+		if (mHandler != null) {
+			mHandler.sendEmptyMessage(Util.msg_isplaying);
+		}
+		if (mNotificationManager != null) {
+			mNotificationManager.cancelAll();
+		}
 
-		mHandler.removeMessages(Util.msg_current);
+		if (mHandler != null) {
+			mHandler.removeMessages(Util.msg_current);
+		}
 	}
 
 	/**
